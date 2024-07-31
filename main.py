@@ -13,9 +13,9 @@ from colorama import Fore
 
 colorama.init(autoreset=True)
 
-print(f"""===============
+print(f"""====================
 discord-archiver.py
-===============
+====================
 {Fore.YELLOW}DISCLAIMER: {Fore.WHITE}Please check {Fore.GREEN}config.py {Fore.WHITE}before using this script.""")
 
 if not DISCORD_TOKEN or DISCORD_TOKEN == "TOKEN":
