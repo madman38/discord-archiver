@@ -14,7 +14,7 @@ from colorama import Fore
 colorama.init(autoreset=True)
 
 print(f"""===============
-dc-archiver.py
+discord-archiver.py
 ===============
 {Fore.YELLOW}DISCLAIMER: {Fore.WHITE}Please check {Fore.GREEN}config.py {Fore.WHITE}before using this script.""")
 
