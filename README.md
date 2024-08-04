@@ -31,8 +31,6 @@ Archive messages, attachments, profile pictures, and custom emojis from a specif
 
 ## Visualization
 
-Visualization Website
-
 You can visualize the archived Discord messages using my [Discord Chat Archive Viewer](https://madman38.github.io/discord-chat-archive-viewer) tool. This website uses the generated ZIP file from this script and presents the messages in a layout similar to the Discord UI.
 
 ## Contributing
