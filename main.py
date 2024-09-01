@@ -74,30 +74,34 @@ class Person:
     def download_attachment(self, attachment_urls):
         downloaded_attachments = []
         for url in attachment_urls:
-            file_name = url.split('/')[-1].split('?')[0]
-            file_extension = file_name.split('.')[-1].lower()
-            
-            if file_extension not in ALLOWED_FILE_TYPES:
+            try:
+                file_name = url.split('/')[-1].split('?')[0]
+                file_extension = file_name.split('.')[-1].lower()
+                
+                if file_extension not in ALLOWED_FILE_TYPES:
+                    continue
+                
+                response = requests.head(url)
+                file_size_mb = int(response.headers.get('Content-Length', 0)) / (1024 * 1024)
+                
+                if file_size_mb > MAX_DOWNLOAD_SIZE_MB:
+                    continue
+                
+                os.makedirs(f'temp_{channel_id}_attachments', exist_ok=True)
+                
+                unique_filename = f"{self.message_id}_{file_name}"
+                file_path = os.path.join(f'temp_{channel_id}_attachments', unique_filename)
+                
+                with requests.get(url, stream=True) as r:
+                    r.raise_for_status()
+                    with open(file_path, 'wb') as f:
+                        for chunk in r.iter_content(chunk_size=8192):
+                            f.write(chunk)
+                
+                downloaded_attachments.append(unique_filename)
+            except Exception as e:
+                print(f"{Fore.YELLOW}Warning: Failed to download attachment {url}. Error: {str(e)}")
                 continue
-            
-            response = requests.head(url)
-            file_size_mb = int(response.headers.get('Content-Length', 0)) / (1024 * 1024)
-            
-            if file_size_mb > MAX_DOWNLOAD_SIZE_MB:
-                continue
-            
-            os.makedirs(f'temp_{channel_id}_attachments', exist_ok=True)
-            
-            unique_filename = f"{self.message_id}_{file_name}"
-            file_path = os.path.join(f'temp_{channel_id}_attachments', unique_filename)
-            
-            with requests.get(url, stream=True) as r:
-                r.raise_for_status()
-                with open(file_path, 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=8192):
-                        f.write(chunk)
-            
-            downloaded_attachments.append(unique_filename)
         
         return downloaded_attachments
 
@@ -230,7 +234,10 @@ async def on_ready():
     shutil.rmtree(f"temp_{channel_id}_profile_photos", ignore_errors=True)
     shutil.rmtree(f"temp_{channel_id}_emojis", ignore_errors=True)
 
-    input(f"Saved last {limitmessage} messages from {channel.name} to {zip_filename}\n\nPress Enter to exit.")
-    sys.exit(1)
+    print(f"\nSaved last {limitmessage} messages from {channel.name} to {zip_filename}")
+    print(f"You can view your archived chat at: {Fore.CYAN}https://madman38.github.io/discord-chat-archive-viewer{Fore.WHITE}")
+
+    input("\nPress Enter to exit.")
+    sys.exit(0)
 
 client.run(DISCORD_TOKEN, bot=False)
