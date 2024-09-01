@@ -179,11 +179,31 @@ async def on_ready():
             continue
 
         if content or att:
-            p = Person(message.author.id, str(message.author.avatar_url), message.author.display_name, time, content, att, message.id)
-            jsondata = p.makejson()
+            jsondata = {
+                "userid": message.author.id,
+                "pfp": str(message.author.avatar_url),
+                "username": message.author.display_name,
+                "time": time,
+                "message": content,
+                "attachment": att,
+                "message_id": message.id
+            }
             all_messages.append(jsondata)
 
     temp_json_filename = f"temp_{channel_id}_{channel.name}.json"
+    with open(temp_json_filename, "w", encoding="utf-8") as file:
+        json.dump(all_messages, file, indent=2, ensure_ascii=False)
+
+    print(f"JSON file saved: {temp_json_filename}")
+
+    for message_data in all_messages:
+        p = Person(message_data["userid"], message_data["pfp"], message_data["username"], 
+                   message_data["time"], message_data["message"], message_data["attachment"], 
+                   message_data["message_id"])
+        message_data["pfp"] = p.pfp
+        message_data["message"] = p.message
+        message_data["attachment"] = p.attachment
+
     with open(temp_json_filename, "w", encoding="utf-8") as file:
         json.dump(all_messages, file, indent=2, ensure_ascii=False)
 
